@@ -1,0 +1,36 @@
+    template_home:                  /home/Wren/tmpl
+    site_name:                      BogHop
+    app_name:                       Wren v1.0
+    home_page:                      http://boghop.com
+    site_description:               Jr's Notes
+    domain_name:                    boghop.com
+    cookie_prefix:                  wren 
+#    css_dir_url:                    http://localhost/css 
+    css_dir_url:                    /css 
+    maincss_url:                    http://boghop.com/css/wren.css
+    api_url:                        http://boghop.net/api/v1
+    author_name:                    jr
+    author_email:                   myemailaddress
+    markup_storage:                 /home/Wren/markup
+    session_id_storage:             /home/Wren/sessionids
+    versions_storage:               /home/Wren/root/versions
+    default_doc_root:               /home/Wren/root
+    private_dir:                    /home/Wren/private
+    debug_mode:                     0
+    mailgun_api_key:                mailgun-api-key
+    mailgun_domain:                 mailgun-domain
+    mailgun_from:                   Boghop <postmaster-mailgun-domain>
+    links_json_file:                links.json
+    rss_file:                       rss.xml
+    mft_file:                       mft.html
+    sitemap_file:                   sitemap.xml
+    max_entries:                    100
+    preview_only_key:               anything-can-be-used
+    webmentions_file:               webmentions.txt
+    aws_access_key_id:              aws_access_key_id
+    aws_secret_access_key:          aws_secret_access_key
+    indieauth_url:                  https://indieauth.com/auth
+    indieauth_redirect_url:         http://boghop.net/api/v1/users/auth/
+    indieauth_client_id:            http://boghop.com
+    indieauth_me:                   http://boghop.com
+    indieauth_wren_redirect_url:    http://boghop.net/wren/indieauth/
