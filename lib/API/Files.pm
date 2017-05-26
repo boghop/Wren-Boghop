@@ -400,7 +400,7 @@ sub _create_rss_file {
     print FILE $json_str . "\n";
     close FILE;
 
-    S3::copy_to_s3(Config::get_value_for("json_feed_file"),  $json_str, "text/json");
+    S3::copy_to_s3(Config::get_value_for("json_feed_file"),  $json_str, "application/json");
 }
 
 
