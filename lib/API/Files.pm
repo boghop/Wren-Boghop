@@ -363,24 +363,31 @@ sub _create_rss_file {
 
     ############## create JSON feed file
 
-    my $ctr = 0;
-    foreach my $entry_ref ( @rss_stream ) {
-        $entry_ref->{title} =~ s/"/\\"/g;
-        $entry_ref->{description} =~ s/"/\\"/g;
-        $entry_ref->{comma} = ",";
-        $ctr++;
+    my $json_hash_ref;
+
+    $json_hash_ref->{version}        =  "https://jsonfeed.org/version/1";
+    $json_hash_ref->{title}          =  Config::get_value_for("site_name");
+    $json_hash_ref->{home_page_url}  =  Config::get_value_for("home_page"); 
+    $json_hash_ref->{feed_url}       =  Config::get_value_for("home_page") . "/feed.json";
+    $json_hash_ref->{description}    =  Config::get_value_for("site_name") . " " . Config::get_value_for("site_description");
+    $json_hash_ref->{pubDate}        =  $hash_ref->{created_date} . " " . $hash_ref->{created_time};
+    $json_hash_ref->{generator}      =  Config::get_value_for("app_name");
+
+    my @items = ();
+
+    foreach my $hr ( @rss_stream ) {
+        my $h;
+        $h->{id}              =  $hr->{link};     
+        $h->{url}             =  $hr->{link};     
+        $h->{title}           =  $hr->{title};     
+        $h->{author}          =  { "name" => $hr->{author} };
+        $h->{date_published}  =  $hr->{pubDate};     
+        $h->{content_text}    =  $hr->{description};     
+        push(@items, $h);
     }
-
-    $rss_stream[$ctr-1]->{comma} = "";    
-
-    $t = Page->new("jsonfeed");
-    $t->set_template_variable("site_name",         Config::get_value_for("site_name"));
-    $t->set_template_variable("link",              Config::get_value_for("home_page")); 
-    $t->set_template_variable("site_description",  Config::get_value_for("site_description"));
-    $t->set_template_variable("app_name",          Config::get_value_for("app_name"));
-    $t->set_template_variable("current_date_time", "$hash_ref->{created_date} $hash_ref->{created_time}");
-    $t->set_template_loop_data("article_loop", \@rss_stream);
-    my $json_feed_output  = $t->create_file();
+    $json_hash_ref->{items}       = \@items;
+    my $json_obj = JSON::PP->new->ascii->pretty;
+    my $json_str = $json_obj->encode($json_hash_ref);
 
     # write json feed to file
     my $json_feed_filename = Config::get_value_for("default_doc_root") . "/" . Config::get_value_for("json_feed_file");
@@ -390,10 +397,10 @@ sub _create_rss_file {
         Error::report_error("500", "Bad file name.", "Could not write JSON feed file. $!");
     }
     open FILE, ">$json_feed_filename" or Error::report_error("500", "Unable to open JSON feed file for write.", "$!");
-    print FILE $json_feed_output . "\n";
+    print FILE $json_str . "\n";
     close FILE;
 
-    S3::copy_to_s3(Config::get_value_for("json_feed_file"),  $json_feed_output, "text/json");
+    S3::copy_to_s3(Config::get_value_for("json_feed_file"),  $json_str, "text/json");
 }
 
 
@@ -439,7 +446,6 @@ sub _create_microformatted_file {
     my $max_entries = Config::get_value_for("max_entries");
     my @mft_stream = ();
     for ( my $i=0; $i<$max_entries and $i<$stream_len; $i++ ) {
-        delete($stream->[$i]->{comma});
         push(@mft_stream, $stream->[$i]);
     } 
 
