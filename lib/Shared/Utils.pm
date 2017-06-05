@@ -241,5 +241,42 @@ sub modify_date {
     return "$arr[2] $arr[1], $arr[3]";
 }
 
-1;
+# my original date-time format:
+#    Mon, 05 Jun 2017 16:44:12 Z
+# needs to be:
+#    2017-06-05T11:07:30+00:00
+# or 2017-06-05T16:32:53Z
+#
+# per https://www.ietf.org/rfc/rfc3339.txt
+# and https://en.wikipedia.org/wiki/ISO_8601
 
+sub convert_date_time_to_iso8601_format {
+
+    my $orig_dt = shift; # example: Mon, 05 Jun 2017 16:44:12 Z
+
+    my $month_names = {
+        "Jan" => "01",
+        "Feb" => "02",
+        "Mar" => "03",
+        "Apr" => "04",
+        "May" => "05",
+        "Jun" => "06",
+        "Jul" => "07",
+        "Aug" => "08",
+        "Sep" => "09",
+        "Oct" => "10",
+        "Nov" => "11",
+        "Dec" => "12"
+    };
+
+    my @tmp_array = split(/ /, $orig_dt);
+
+    my $day      = $tmp_array[1];
+    my $monname  = $tmp_array[2]; # ex: Jan
+    my $year     = $tmp_array[3];
+    my $time     = $tmp_array[4];
+
+    return "$year-$month_names->{$monname}-$day" . "T" . $time . "Z"; 
+}
+
+1;

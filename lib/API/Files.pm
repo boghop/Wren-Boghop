@@ -370,8 +370,8 @@ sub _create_rss_file {
     $json_hash_ref->{home_page_url}  =  Config::get_value_for("home_page"); 
     $json_hash_ref->{feed_url}       =  Config::get_value_for("home_page") . "/feed.json";
     $json_hash_ref->{description}    =  Config::get_value_for("site_name") . " " . Config::get_value_for("site_description");
-    $json_hash_ref->{pubDate}        =  $hash_ref->{created_date} . " " . $hash_ref->{created_time};
-    $json_hash_ref->{generator}      =  Config::get_value_for("app_name");
+#    $json_hash_ref->{pubDate}        =  $hash_ref->{created_date} . " " . $hash_ref->{created_time};
+#    $json_hash_ref->{generator}      =  Config::get_value_for("app_name");
 
     my @items = ();
 
@@ -381,7 +381,7 @@ sub _create_rss_file {
         $h->{url}             =  $hr->{link};     
         $h->{title}           =  $hr->{title};     
         $h->{author}          =  { "name" => $hr->{author} };
-        $h->{date_published}  =  $hr->{pubDate};     
+        $h->{date_published}  =  Utils::convert_date_time_to_iso8601_format($hr->{pubDate});     
         $h->{content_text}    =  $hr->{description};     
         push(@items, $h);
     }
