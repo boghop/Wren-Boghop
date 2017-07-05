@@ -1,35 +1,37 @@
-    template_home:                  /home/Wren/tmpl
-    site_name:                      BogHop
+    template_home:                  /home/ubuntu/Wren/tmpl
+    site_name:                      boghop
     app_name:                       Wren v1.0
     home_page:                      http://boghop.com
-    site_description:               Jr's Notes
+    site_description:               jr's Notes
     domain_name:                    boghop.com
     cookie_prefix:                  wren 
 #    css_dir_url:                    http://localhost/css 
     css_dir_url:                    /css 
     maincss_url:                    http://boghop.com/css/wren.css
+    # api_url:                        http://boghop.com/api/v1
+#    api_url:                        http://ec2-54-211-235-101.compute-1.amazonaws.com/api/v1
     api_url:                        http://boghop.net/api/v1
     author_name:                    jr
-    author_email:                   myemailaddress
-    markup_storage:                 /home/Wren/markup
-    session_id_storage:             /home/Wren/sessionids
-    versions_storage:               /home/Wren/root/versions
-    default_doc_root:               /home/Wren/root
-    private_dir:                    /home/Wren/private
+    author_email:                   boghop@riseup.net
+    markup_storage:                 /home/ubuntu/Wren/markup
+    session_id_storage:             /home/ubuntu/Wren/sessionids
+    versions_storage:               /home/ubuntu/Wren/root/versions
+    default_doc_root:               /home/ubuntu/Wren/root
+    private_dir:                    /home/ubuntu/Wren/private
     debug_mode:                     0
-    mailgun_api_key:                mailgun-api-key
-    mailgun_domain:                 mailgun-domain
-    mailgun_from:                   Boghop <postmaster-mailgun-domain>
+    mailgun_api_key:                key-5l7fk1h9d4xowey4-arizir8d1pfj2l6
+    mailgun_domain:                 maketoledo.com
+    mailgun_from:                   boghop <postmaster@maketoledo.com>
     links_json_file:                links.json
     rss_file:                       rss.xml
     json_feed_file:                 feed.json
     mft_file:                       mft.html
     sitemap_file:                   sitemap.xml
-    max_entries:                    100
+    max_entries:                    20
     preview_only_key:               anything-can-be-used
     webmentions_file:               webmentions.txt
-    aws_access_key_id:              aws_access_key_id
-    aws_secret_access_key:          aws_secret_access_key
+    aws_access_key_id:              AKIAIXSQ3YIOSX5CENAA
+    aws_secret_access_key:          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
     indieauth_url:                  https://indieauth.com/auth
     indieauth_redirect_url:         http://boghop.net/api/v1/users/auth/
     indieauth_client_id:            http://boghop.com
