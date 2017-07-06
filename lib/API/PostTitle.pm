@@ -20,7 +20,7 @@ use NEXT;
             posttitle          => undef,
             slug               => undef,
             postid             => 0,
-            markup_type        => "textile",
+            markup_type        => "markdown",
             content_type       => undef
         };
 
