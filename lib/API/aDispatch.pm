@@ -14,6 +14,7 @@ my $dispatch_for = {
     searches           =>   sub { return \&do_sub(       "Searches",    "searches"                 ) },
     webmentions        =>   sub { return \&do_sub(       "Webmentions", "webmentions"              ) },
     showerror          =>   sub { return \&do_sub(       "Error",       "error"                    ) },
+    micropub           =>   sub { return \&do_sub(       "Micropub",    "micropub"                 ) },
 };
 
 sub execute {

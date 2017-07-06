@@ -19,7 +19,7 @@ sub rebuild_html {
 
     my $markup = Utils::trim_spaces($original_markup);
     if ( !defined($markup) || length($markup) < 1 ) {
-        Error::report_error("400", "Invalid post.", "You most enter text.");
+        Error::report_error("400", "Invalid post.", "You must enter text.");
     } 
 
     my $formtype = $hash_ref->{'form_type'};

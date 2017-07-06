@@ -30,11 +30,13 @@ sub create_post {
         $preview_only = 1;
     }
 
+
     if ( !Auth::is_valid_login($logged_in_author_name, $session_id, $rev) and !$preview_only ) { 
         Error::report_error("400", "Unable to peform action.", "You are not logged in.");
     }
 
     my $submit_type     = $hash_ref->{'submit_type'}; # Preview or Post 
+
     if ( $submit_type ne "Preview" and $submit_type ne "Create" ) {
         Error::report_error("400", "Unable to process post.", "Invalid submit type given.");
     } 
@@ -43,7 +45,7 @@ sub create_post {
 
     my $markup = Utils::trim_spaces($original_markup);
     if ( !defined($markup) || length($markup) < 1 ) {
-        Error::report_error("400", "Invalid post.", "You most enter text.");
+        Error::report_error("400", "Invalid post.", "You must enter text.");
     } 
 
     my $formtype = $hash_ref->{'form_type'};
@@ -55,11 +57,26 @@ sub create_post {
     }
 #    $markup = HTML::Entities::encode($markup, '^\n\x20-\x25\x27-\x7e');
 
+
+    my $syn_to;
+    if ( $markup =~ m|^<!--[\s]*syn_to[\s]*:[\s]*(.+)-->|mi ) {
+        $syn_to      = Utils::trim_spaces($1);
+        my $target_url = Config::get_value_for("bridgy_target_url_" . $syn_to);
+        $markup .= "\n\n<!-- bridghy_target_url_"  . $syn_to . " : " . $target_url . " -->\n";
+    }
+
+
     my $o = PostTitle->new();
     $o->process_title($markup);
     if ( $o->is_error() ) {
         Error::report_error("400", "Error creating post.", $o->get_error_string());
     } 
+
+
+# Error::report_error("400", "get_title = " . $o->get_title() . " --- get_post_title = " . $o->get_post_title(), "get_content_type = " . $o->get_content_type() . " --- get_after_title_markup = " . $o->get_after_title_markup());
+    
+
+
     my $title        = $o->get_post_title();
     my $post_type    = $o->get_content_type(); # article or note
     my $slug         = $o->get_slug();
@@ -109,6 +126,14 @@ sub create_post {
 
     if ( $markup =~ m|^<!--[\s]*imageheader[\s]*:[\s]*(.+)-->|mi ) {
         $hash_ref->{imageheader}      = Utils::trim_spaces($1);
+    }
+
+    if ( $markup =~ m|^<!--[\s]*reply_to[\s]*:[\s]*(.+)-->|mi ) {
+        $hash_ref->{reply_to}      = Utils::trim_spaces($1);
+    }
+
+    if ( $markup =~ m|^<!--[\s]*syn_to[\s]*:[\s]*(.+)-->|mi ) {
+        $hash_ref->{syn_to}      = Utils::trim_spaces($1);
     }
 
     if ( $markup =~ m|^<!--[\s]*description[\s]*:[\s]*(.+)-->|mi ) {

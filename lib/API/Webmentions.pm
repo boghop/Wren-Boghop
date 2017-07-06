@@ -9,6 +9,9 @@ use LWP::Simple;
 use Encode;
 use API::Build;
 use API::Files;
+use LWP::UserAgent;
+use JSON::PP;
+
 
 sub webmentions {
     my $tmp_hash = shift;
@@ -155,6 +158,37 @@ JSONMSG
         exit;
 }
 
+sub send_webmention_to_bridgy {
+    my $source_url = shift;
+    my $syn_to = shift;
+
+
+    my $target_url = Config::get_value_for("bridgy_target_url_" . $syn_to);
+
+    my $webmention_endpoint_url = Config::get_value_for("bridgy_webmention_endpoint_" . $syn_to);
+
+    my $form_hash_ref = {
+        'source' => $source_url,
+        'target' => $target_url,
+    };
+
+    my $ua = LWP::UserAgent->new;
+    my $response = $ua->post($webmention_endpoint_url, $form_hash_ref);
+    my @rc = split(/ /, $response->status_line);
+    my $rc = $rc[0];
+
+    my $returned_json_hash_ref = decode_json $response->content;
+
+    if ( $rc >= 200 and $rc < 300 ) {
+        return 1;    
+    } elsif ( $rc >= 400 and $rc < 500 ) {
+        Error::report_error("400", "Failed to send Webmention.", "error = " . $returned_json_hash_ref->{error} . " error_description = " . $returned_json_hash_ref->{error_description}); 
+    } else {
+        Error::report_error("400", "Failed to send Webmention.", "Unknown reasons for the failure.");
+    }         
+}
+
+
 # http://webmention.org
 # WebMention defines several error cases that must be handled.
 # All errors below MUST be returned with an HTTP 400 Bad Request response code.
@@ -164,6 +198,61 @@ JSONMSG
 #   no_link_found: The source URI does not contain a link to the target URI.
 #   already_registered: The specified WebMention has already been registered.
 
+sub send_webmention {
+    my $source_url = shift;
+    my $target_url = shift;
+
+    my $web_protocol;
+    my $domain_name;
+    my $uri;
+
+
+    if ( $target_url =~ m/(http[s]?):\/\/([^\/]*)[\/](.*)/igs ) {
+        $web_protocol = $1;
+        $domain_name  = $2;
+        $uri          = $3;
+
+        my $target_homepage_url = $web_protocol . "://" . $domain_name;
+
+        my $ua = LWP::UserAgent->new;
+        my $target_homepage_response = $ua->get($target_homepage_url);
+
+        # <link rel="webmention" href="http://targetsite.com/webmention" />
+
+        if ( $target_homepage_response->content =~ m/<link[\s]*
+            rel[\s]*=[\s]*
+            "webmention"[\s]*
+            href[\s]*
+            =[\s]*
+            "(.*?)"
+            [\s]*
+            [\/]?>/isx ) {
+
+            my $webmention_endpoint_url = $1;
+
+            my $form_hash_ref = {
+                'source' => $source_url,
+                'target' => $target_url,
+            };
+
+            my $response = $ua->post($webmention_endpoint_url, $form_hash_ref);
+            my @rc = split(/ /, $response->status_line);
+            my $rc = $rc[0];
+
+            my $returned_json_hash_ref = decode_json $response->content;
+
+            if ( $rc >= 200 and $rc < 300 ) {
+                return 1;    
+            } elsif ( $rc >= 400 and $rc < 500 ) {
+                Error::report_error("400", "Failed to send Webmention.", "error = " . $returned_json_hash_ref->{error} . " error_description = " . $returned_json_hash_ref->{error_description}); 
+            } else {
+                Error::report_error("400", "Failed to send Webmention.", "Unknown reasons for the failure.");
+            }         
+            
+        } else {
+            Error::report_error("400", "Failed to send Webmention.", "Unable to parse web mention endpoint from target homepage");
+        }
+    }
+}
 
 1;
-

@@ -30,6 +30,8 @@ sub authenticate {
 
     my $code = $q->param("code");
 
+# Error::report_error("400", "debug code:", $code);
+
     my $url          = Config::get_value_for("indieauth_url");
     my $redirect_uri = Config::get_value_for("indieauth_redirect_url");
     my $client_id    = Config::get_value_for("indieauth_client_id");

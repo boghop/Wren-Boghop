@@ -25,6 +25,10 @@ sub get_cgi_params_from_path_info {
             $path_info =~ s/\/\?$1//;
         }
 
+        if ( $path_info =~ m/\?(.*)$/ ) {
+            $path_info =~ s/\?$1//;
+        }
+
         $path_info =~ s/\/// if ( $path_info );
         @values = split(/\//, $path_info);
     }

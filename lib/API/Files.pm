@@ -11,6 +11,7 @@ use File::Path qw(make_path remove_tree);
 use JSON::PP;
 use API::Error;
 use API::S3;
+use API::Webmentions;
 
 
 sub output {
@@ -22,8 +23,10 @@ sub output {
 
     if ( exists($hash_ref->{template}) ) {
         $t = Page->new($hash_ref->{template});
-    } else {
+    } elsif ( $hash_ref->{post_type} eq "article" ) {
         $t = Page->new("articlehtml");
+    } else {
+        $t = Page->new("notehtml");
     }
        
     my $html = $hash_ref->{html};
@@ -84,6 +87,15 @@ sub output {
     }
 
     _copy_to_s3_bucket($hash_ref, $markup, $html_output);
+
+    if ( $submit_type eq "create" and exists($hash_ref->{reply_to}) ) {
+        # source url (reply) and target url (post replying to)
+        Webmentions::send_webmention($hash_ref->{location}, $hash_ref->{reply_to});
+    }
+
+    if ( $submit_type eq "create" and exists($hash_ref->{syn_to}) ) {
+        Webmentions::send_webmention_to_bridgy($hash_ref->{location}, $hash_ref->{syn_to});
+    }
 
     return 1;
 }
@@ -446,6 +458,7 @@ sub _create_microformatted_file {
     my $max_entries = Config::get_value_for("max_entries");
     my @mft_stream = ();
     for ( my $i=0; $i<$max_entries and $i<$stream_len; $i++ ) {
+        delete($stream->[$i]->{comma});
         push(@mft_stream, $stream->[$i]);
     } 
 
