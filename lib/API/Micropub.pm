@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use diagnostics;
 
+use HTML::Entities;
+use URI::Escape::JavaScript qw(escape unescape);
 use LWP;
 use CGI qw(:standard);
 use JSON::PP;
@@ -82,6 +84,10 @@ sub create {
         if ( ref $json_hash_ref->{properties}->{content}->[0] eq 'HASH' ) {
             # article 
             $markup = $json_hash_ref->{properties}->{content}->[0]->{html};
+            my $tmp_title = $json_hash_ref->{properties}->{name}->[0];
+            $markup = "# " . $tmp_title . "\n\n" . $markup; # default to Markdown
+            $markup = URI::Escape::JavaScript::unescape($markup);
+            $markup = HTML::Entities::encode($markup, '^\n\x20-\x25\x27-\x7e');
 #            $markup = Utils::remove_html($markup);
         } else {
             # note
