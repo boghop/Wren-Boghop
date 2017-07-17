@@ -7,6 +7,7 @@ use diagnostics;
 use LWP;
 use API::Login;
 use JSON::PP;
+use URI::Escape;
 
 # May 11, 2017 - this subroutine is unnecessary. 
 sub do_indie_auth_login {
@@ -41,6 +42,21 @@ sub authenticate {
 #    Error::report_error("400", "debug", "doc=$doc <br> status=$status <br> success=$success <br> resp=$resp");
 
     if ( $status == 200 ) {
+
+        if ( $doc and length($doc) > 0 ) {
+            my $me           = Config::get_value_for("indieauth_me");
+            # returned info stored in doc = 
+            # me=http%3A%2F%2Fmysite.com%2F&scope
+            my $unescaped_doc = uri_unescape($doc);
+            my @values = split(/&/, $unescaped_doc);
+            my @url = split(/=/, $values[0]);
+            if ( $me ne $url[1] ) {
+                Error::report_error("400", "Unable to login.", "Wrong website submitted in login form.");
+            }
+        } else {
+            Error::report_error("400", "Unable to login.", "Missing info from the IndieAuth server.");
+        }
+
         my $date_time_ref = Utils::create_datetime_stamp();
           
         my $rev = Login::_create_session_id($date_time_ref);  
