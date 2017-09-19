@@ -2,7 +2,7 @@
 
 ### September 2017 update
 
-In August 2017, I moved the content from boghop.com to yet another new and hopefully final home for all of my content, which is sawv.org. I'm not using this repo to host the Wren code that manages sawv.org. That code exists in a repo at my main GitHub account. I'll probably use this GitHub account only for IndieAuth logins.
+In August 2017, I moved the content from boghop.com to yet another new and hopefully final home for all of my content, which is sawv.org. I'm not using this repo to host the Wren code that manages sawv.org. That code exists in a repo at my main GitHub account. I'll probably use this GitHub account only for IndieAuth logins. I'm hosting sawv.org at Digital Ocean. I used boghop.com to learn about AWS services.
 
 
 ### Previous readme
